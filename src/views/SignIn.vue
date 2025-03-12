@@ -2,8 +2,11 @@
 import Header from '../components/Header.vue'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { useUserStore } from '../stores/user';
 
 const router = useRouter()
+const userStore = useUserStore()
+
 
 const email = ref("")
 const password = ref("")
@@ -43,8 +46,13 @@ async function signIn (event) {
 	let response = await fetch(url, options)
 	if (response.status === 200) {
 		const data = await response.json()
-		localStorage.setItem("token", data.token)
-		localStorage.setItem("email", email.value)
+		userStore.setUser(
+			result.firstName ?? '', 
+			result.lastName ?? '', 
+			result.userName ?? '', 
+			email.value, 
+			result.token ?? ''
+		)
 		validationAlert.value = ""
 		router.push({
 			name: 'main'

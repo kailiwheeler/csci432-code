@@ -2,8 +2,10 @@
 import Header from '../components/Header.vue'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { useUserStore } from '../stores/user';
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const firstName = ref("")
 const lastName = ref("")
@@ -55,8 +57,13 @@ async function join (event) {
 	console.log(response)
 	if (response.status === 201) {
 		const data = await response.json()
-		localStorage.setItem("token", data.token)
-		localStorage.setItem("email", email.value)
+		userStore.setUser(
+			firstName.value,
+			lastName.value,
+			userName.value,
+			email.value,
+			data.token
+		)
 		validationAlert.value = ""		
 		router.push({
 			name: 'main'
