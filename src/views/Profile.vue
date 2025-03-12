@@ -9,15 +9,16 @@ const userName = ref("")
 const validationAlert = ref("")
 import { onMounted } from 'vue';
 import Modal from '@/components/Modal.vue';
+import { useUserStore } from '../stores/user';
+const userStore = useUserStore()
 
 
 async function getData (){
-    const token = localStorage.getItem("token")
     const url = 'https://hap-app-api.azurewebsites.net/user'
     const options = {
 		method: "GET",
 		headers: {
-			Authorization: `Bearer ${token}`,
+			Authorization: `Bearer ${userStore.token}`,
 		},
 	}
 	let response = await fetch(url, options);
@@ -64,11 +65,10 @@ async function save(e) {
 			return
 		}
 	}
-    if(newPassword.value.length < 8){
-			validationAlert.value = "Password Must Be at Least 8 Characters"			
-			return
-		}
-    const token = localStorage.getItem("token")
+    if(newPassword.value != 0 & newPassword.value.length < 8){
+		validationAlert.value = "Password Must Be at Least 8 Characters"			
+		return
+	}
     const data = {}
     if (newUserName.value) data.userName = newUserName.value;
     if (newEmail.value) data.email = newEmail.value;
@@ -81,7 +81,7 @@ async function save(e) {
 		method: "PATCH",
 		headers: {
 			"Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            "Authorization": `Bearer ${userStore.token}`,
 		},
 		body: JSON.stringify(data),
 	}
@@ -89,8 +89,15 @@ async function save(e) {
 	console.log(response)
 	if (response.status === 200) {
 		const data = await response.json()
-		localStorage.setItem("email", email.value)
-        console.log("ok")	
+		console.log(data)
+        console.log("ok")
+        userStore.setUser(
+			data.firstName ?? '', 
+			data.lastName ?? '', 
+			data.userName ?? '', 
+			email.value, 
+			data.token ?? ''
+		)	
 		await getData()
 	}
 	else if (response.status === 400) {

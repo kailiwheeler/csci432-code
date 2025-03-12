@@ -10,9 +10,7 @@ import Posts from '@/views/Posts.vue'
 import Search2 from '@/views/Search2.vue'
 import PrivateChat from '@/views/PrivateChat.vue'
 
-function isAuthenticated() {
-	return !!localStorage.getItem('token');
-}
+import { useUserStore } from '../stores/user';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,7 +77,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-	if (to.meta.authRequired && !isAuthenticated()) {
+	const userStore = useUserStore()
+	if (to.meta.authRequired && !userStore.token) {
 	  next('/');
 	} else {
 	  next();

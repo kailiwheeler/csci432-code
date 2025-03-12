@@ -7,6 +7,8 @@ const message = ref("")
 const hasMessage = ref(false)
 const router = useRoute()
 const userId = ref(router.params.userId)
+import { useUserStore } from '../stores/user';
+const userStore = useUserStore()
 
 onMounted(() => {
     getMessageHistory()
@@ -14,13 +16,12 @@ onMounted(() => {
     console.log('Component mounted!')
 });
 async function getMessageHistory(){
-    const token = localStorage.getItem("token")
     
     const url = `https://hap-app-api.azurewebsites.net/messages/${userId.value}`
     const options = {
 		method: "GET",
 		headers: {
-			Authorization: `Bearer ${token}`,
+			Authorization: `Bearer ${userStore.token}`,
 		},
 	}
 	let response = await fetch(url, options);
@@ -41,7 +42,6 @@ async function getMessageHistory(){
     }
 }
     async function postPrivateMessage(event){
-        const token = localStorage.getItem("token")
         const data = {text:message.value}
         console.log(userId.value)
         const url = `https://hap-app-api.azurewebsites.net/message/${userId.value}`
@@ -51,7 +51,7 @@ async function getMessageHistory(){
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `Bearer ${userStore.token}`,
             },
             body: JSON.stringify(data),
         }

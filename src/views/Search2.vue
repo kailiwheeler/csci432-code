@@ -3,6 +3,8 @@ import { ref } from 'vue';
 import { reactive } from 'vue';
 import UserCard from '@/components/UserCard.vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../stores/user';
+const userStore = useUserStore()
 
 const searchQuery = ref('');
 const users = ref([]);
@@ -13,12 +15,11 @@ const searchFilters = reactive({
 
 
 async function searchUsers() {
-    const token = localStorage.getItem("token");
     const url = `https://hap-app-api.azurewebsites.net/users?search=firstName|lastName|userName:${searchQuery.value}&sortBy=${searchFilters.sortBy}&limit=${searchFilters.limit}`;
     const options = {
         method: "GET",
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userStore.token}`,
         },
     };
     

@@ -3,26 +3,25 @@ import Header from '../components/Header.vue'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { RouterView } from 'vue-router';
+import { useUserStore } from '../stores/user';
 
-
+const userStore = useUserStore()
 const router = useRouter()
 
 const dropdownIsVisible = ref(false)
 
 async function signOut(event) {
-	const token = localStorage.getItem("token")
 	const url = 'https://hap-app-api.azurewebsites.net/user/logout'
 	const options = {
 		method: "POST",
 		headers: {
-			Authorization: `Bearer ${token}`,
+			Authorization: `Bearer ${userStore.token}`,
 		},
 	}
 	let response = await fetch(url, options);
 	if (response.ok) {
 		if (response.status === 200) {
-			localStorage.removeItem("email")
-			localStorage.removeItem("token")
+			userStore.$reset()
 			router.push({
 				name: 'home'
 			})
@@ -33,18 +32,16 @@ async function signOut(event) {
 }
 
 async function deleteAccount(event) {
-	const token = localStorage.getItem("token")
 	const url = 'https://hap-app-api.azurewebsites.net/user'
 	const options = {
 		method: "DELETE",
 		headers: {
-			Authorization: `Bearer ${token}`,
+			Authorization: `Bearer ${userStore.token}`,
 		},
 	}
 	let response = await fetch(url, options);
 	if (response.status === 200) {
-		localStorage.removeItem("email")
-		localStorage.removeItem("token")
+		userStore.$reset()
 		router.push({
 			name: 'home'
 		})

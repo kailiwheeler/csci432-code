@@ -46,12 +46,13 @@ async function signIn (event) {
 	let response = await fetch(url, options)
 	if (response.status === 200) {
 		const data = await response.json()
+		console.log(data)
 		userStore.setUser(
-			result.firstName ?? '', 
-			result.lastName ?? '', 
-			result.userName ?? '', 
+			data.firstName ?? '', 
+			data.lastName ?? '', 
+			data.userName ?? '', 
 			email.value, 
-			result.token ?? ''
+			data.token ?? ''
 		)
 		validationAlert.value = ""
 		router.push({

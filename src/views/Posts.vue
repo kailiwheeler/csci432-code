@@ -9,6 +9,8 @@ const newMessagesCount = ref(0);
 import Modal from '@/components/Modal.vue';
 const modal = useTemplateRef('message-modal');
 const message = ref("")
+import { useUserStore } from '../stores/user';
+const userStore = useUserStore()
 
 onMounted(() => {
     getItems()
@@ -32,7 +34,6 @@ function scrollHandler(event){
     return
 }
 async function postMessage(event){
-    const token = localStorage.getItem("token")
     const data = {text:message.value}
     const url = 'https://hap-app-api.azurewebsites.net/message'
     console.log(data)
@@ -40,7 +41,7 @@ async function postMessage(event){
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            "Authorization": `Bearer ${userStore.token}`,
         },
         body: JSON.stringify(data),
     }
@@ -71,12 +72,11 @@ async function scrollTop(){
     const afterDate = getAfterDate();
     if (!afterDate) return;
 
-    const token = localStorage.getItem("token");
     const url = `https://hap-app-api.azurewebsites.net/messages?after=${afterDate}`;
     const options = {
         method: "GET",
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userStore.token}`,
         },
     };
 
@@ -108,12 +108,11 @@ async function scrollBottom(){
     const beforeDate = getBeforeDate();
     if (!beforeDate) return;
 
-    const token = localStorage.getItem("token");
     const url = `https://hap-app-api.azurewebsites.net/messages?limit=20&before=${beforeDate}`;
     const options = {
         method: "GET",
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userStore.token}`,
         },
     };
     let response = await fetch(url, options);
@@ -150,12 +149,11 @@ function refresh(event){
 }
 
 async function getItems(){
-    const token = localStorage.getItem("token")
     const url = 'https://hap-app-api.azurewebsites.net/messages?limit=10'
     const options = {
 		method: "GET",
 		headers: {
-			Authorization: `Bearer ${token}`,
+			Authorization: `Bearer ${userStore.token}`,
 		},
 	}
 	let response = await fetch(url, options);

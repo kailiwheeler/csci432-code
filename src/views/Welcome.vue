@@ -1,10 +1,11 @@
 <script setup>
     import { ref } from 'vue'
-    const usr = localStorage.getItem("email")
+    import { useUserStore } from '../stores/user';
+
+    const userStore = useUserStore()
     const message = ref("")
 
     async function postMessage(event){
-        const token = localStorage.getItem("token")
         const data = {text:message.value}
         const url = 'https://hap-app-api.azurewebsites.net/message'
         console.log(data)
@@ -12,7 +13,7 @@
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `Bearer ${userStore.token}`,
             },
             body: JSON.stringify(data),
         }
@@ -37,7 +38,7 @@
 <template>
     <main>
         <div class="infoContainer center">
-            <h1 class="fs-600">Hi {{ usr }}</h1>
+            <h1 class="fs-600">Hi {{ userStore.email }}</h1>
         </div>
         <div class="infoContainer center cnt">
             <label for="message">Message: </label>
